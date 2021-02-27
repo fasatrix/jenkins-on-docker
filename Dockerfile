@@ -123,9 +123,9 @@ COPY --chown=jenkins:jenkins casc_config/config.yml casc_config/ec2-agent-config
 # COPY casc_config/anonymous_config.yml $JENKINS_HOME/casc_configs/
 COPY --chown=jenkins:jenkins casc_config/azure_config.yml $JENKINS_HOME/casc_configs/
 # Add configuration for job seeding
-#COPY --chown=jenkins:jenkins casc_config/jobs/* $JENKINS_HOME/casc_configs/
+COPY --chown=jenkins:jenkins casc_config/jobs/* $JENKINS_HOME/casc_configs/
 # Add configuration for views
-#COPY --chown=jenkins:jenkins casc_config/views/* $JENKINS_HOME/casc_configs/
+COPY --chown=jenkins:jenkins casc_config/views/* $JENKINS_HOME/casc_configs/
 
 RUN mkdir $JENKINS_HOME/init.groovy.d
 COPY --chown=jenkins:jenkins jenkins_scripts/disable-jobs-on-nonprod.init.groovy $JENKINS_HOME/init.groovy.d

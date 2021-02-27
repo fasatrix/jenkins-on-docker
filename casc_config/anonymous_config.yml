@@ -1,0 +1,6 @@
+jenkins:
+  authorizationStrategy:
+    azureAdMatrix:
+      permissions:
+      - "Overall/Read:anonymous"
+      - "Overall/Administer:anonymous"

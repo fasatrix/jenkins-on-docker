@@ -1,0 +1,9 @@
+jobs:
+  - script: >
+      buildMonitorView('Project Build Monitor') {
+        description('Master pipeline view from Project Jobs')
+        recurse(true)
+        jobs {          
+          regex(/(.*master)|(ProjectName-.*master)/)
+        }
+      }

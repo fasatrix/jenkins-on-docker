@@ -1,0 +1,7 @@
+jenkins:
+  authorizationStrategy:
+    azureAdMatrix:
+      permissions:
+      - "Agent/Build:AWS_SOME_PROJECT_Admins"
+      - "Agent/Build:AWS_SOME_PROJECT_Developers"
+      - "Agent/Configure:AWS_SOME_PROJECT_Admins"

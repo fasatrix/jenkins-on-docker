@@ -1,0 +1,191 @@
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - basicSSHUserPrivateKey:
+              id: "ec2-agent-ssh-key"
+              description: "SSH Key for the Jenkins EC2 instance"
+              scope: SYSTEM
+              username: ec2-user
+              privateKeySource:
+                directEntry:
+                  privateKey: |
+                    ${ec2-sshkey}
+          - basicSSHUserPrivateKey:
+              id: "kale-ssh-key"
+              description: "SSH Key for access to database host"
+              scope: GLOBAL
+              username: rithomas
+              privateKeySource:
+                directEntry:
+                  privateKey: |
+                    ${to-kale-sshkey}
+          - string:
+              id: "github-secret"
+              description: "Github secret access token"
+              scope: SYSTEM
+              secret: "${github-secret-token}"
+          - string:
+              id: "github-webhook-secret"
+              description: "Github Webhook secret key"
+              scope: GLOBAL
+              secret: "${github-webhook-secret}"
+          - usernamePassword:
+              id: "github-svc-account"
+              description: "Github service account username/password"
+              scope: GLOBAL
+              username: "${github-username}"
+              password: "${github-secret-token}"
+          - usernamePassword:
+              id: "artifactory-user"
+              description: "Artifactory credentials for Jenkins"
+              scope: GLOBAL
+              username: "${artifactory-user}"
+              password: "${artifactory-password}"
+          - usernamePassword:
+              id: "SvnId"
+              description: "LOL SVN account username/password"
+              scope: GLOBAL
+              username: "${svn-username}"
+              password: "${svn-password}"
+          - aws:
+              iamRoleArn: "arn:aws:iam::1111111111111111111:role/some-role"
+              id: "aws-some-role-pre-jenkins"
+              scope: GLOBAL
+jenkins:
+  agentProtocols:
+    - "JNLP4-connect"
+    - "Ping"
+  crumbIssuer:
+    standard:
+      excludeClientIPFromCrumb: false
+  systemMessage: >-
+    "This Jenkins is managed by Configuration as Code, update here: https://github.com/organization/project-jenkins/blob/master/jenkins/master/casc_config/config.yml"
+  scmCheckoutRetryCount: 0
+  labelString: "master"
+  mode: EXCLUSIVE
+  quietPeriod: 5
+  numExecutors: 0
+  slaveAgentPort: 50000
+  securityRealm:
+    azure:
+      clientId: "${ad-client-id}"
+      clientSecret: "${ad-client-secret}"
+      tenant: "${ad-tenant-id}"
+  views:
+    - list:
+        columns:
+          - "status"
+          - "weather"
+          - "jobName"
+          - "lastSuccess"
+          - "lastFailure"
+          - "lastDuration"
+          - "buildButton"
+          - "favoriteColumn"
+        name: "SomeName1"
+        recurse: true
+        includeRegex: "Project-(?:Jenkins|)+.*master"
+    - list:
+        columns:
+          - "status"
+          - "weather"
+          - "jobName"
+          - "lastSuccess"
+          - "lastFailure"
+          - "lastDuration"
+          - "buildButton"
+          - "favoriteColumn"
+        name: "SameName2"
+        recurse: true
+        includeRegex: "Project-.*master"
+    - list:
+        columns:
+          - "status"
+          - "weather"
+          - "jobName"
+          - "lastSuccess"
+          - "lastFailure"
+          - "lastDuration"
+          - "buildButton"
+          - "favoriteColumn"
+        name: "SameName3"
+        recurse: true
+        includeRegex: "*master"
+    - all:
+        name: "all"
+  viewsTabBar: "standard"
+
+security:
+  apiToken:
+    creationOfLegacyTokenEnabled: false
+    tokenGenerationOnCreationEnabled: false
+    usageStatisticsEnabled: true
+  queueItemAuthenticator:
+    authenticators:
+      - global:
+          strategy: "systemAuthorizationStrategy"
+  sSHD:
+    port: -1
+
+unclassified:
+  aWSLogsConfig:
+    logGroupName: "/jenkins/jobs"
+  globallibraries:
+    libraries:
+      - defaultVersion: master
+        implicit: true
+        name: project-shared-library
+        retriever:
+          modernSCM:
+            scm:
+              git:
+                credentialsId: github-svc-account
+                remote: "https://github.com/fasatrix/project-shared-library.git"
+  buildTimestamp:
+    enableBuildTimestamp: true
+    pattern: "dd-MM-yyyy'T'H-mm-ss-SSS"
+    timezone: "NZ"
+  location:
+    adminAddress: "${admin-email}"
+    url: "${domain-url}"
+  gitHubPluginConfig:
+    configs:
+      - credentialsId: github-secret
+        name: "Organization GitHub"
+    hookUrl: "${webhook-url}/github-webhook/"
+    hookSecretConfigs:
+      - credentialsId: github-webhook-secret
+  mailer:
+    replyToAddress: "${admin-email}"
+  email-ext:
+    adminRequiredForTemplateTesting: false
+    allowUnregisteredEnabled: false
+    charset: "UTF-8"
+    debugMode: false
+    defaultBody: "$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS:\r\n\r\nCheck console output at $BUILD_URL to view the results."
+    defaultContentType: "text/plain"
+    defaultSubject: "$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!"
+    maxAttachmentSizeMb: 0
+    precedenceBulk: false
+    watchingEnabled: false
+  artifactorybuilder:
+    useCredentialsPlugin: true
+    artifactoryServers:
+      - serverId: artifactory
+        artifactoryUrl: https://organization.jfrog.io/artifactory
+        deployerCredentialsConfig:
+          credentialsId: "artifactory-user"
+  timestamper:
+    allPipelines: false
+    elapsedTimeFormat: "'<b>'HH:mm:ss.S'</b> '"
+    systemTimeFormat: "'<b>'HH:mm:ss'</b> '"
+  slackNotifier:
+    botUser: false
+    sendAsText: false
+    room: ""
+tool:
+  git:
+    installations:
+      - home: "git"
+        name: "Default"

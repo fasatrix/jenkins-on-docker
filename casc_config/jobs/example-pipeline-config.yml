@@ -1,0 +1,69 @@
+jobs:
+  - script: >
+      multibranchPipelineJob('Project-FancyName-Web') {
+        description("The FancyName project. Developed as part of the Funcy programme.")
+        branchSources {
+          branchSource {
+            source {
+              github {
+                id('some-id')
+                credentialsId('github-svc-account')
+                repoOwner('project')
+                repository('some-rep')
+                configuredByUrl(true)
+                repositoryUrl('https://github.com/project/some-rep')
+                traits {
+                  cloneOptionTrait {
+                    extension {
+                      shallow(false)
+                      noTags(false)
+                      reference('')
+                      depth(0)
+                      honorRefspec(false)
+                      timeout(10)
+                    }
+                  }
+                  gitHubBranchDiscovery {
+                    strategyId(3)
+                  }
+                  headWildcardFilter {
+                    includes('*')
+                    excludes('CI-SKIP*')
+                  }
+                  submoduleOptionTrait {
+                    extension {
+                      disableSubmodules(false)
+                      recursiveSubmodules(true)
+                      trackingSubmodules(false)
+                      parentCredentials(true)
+                      reference('')
+                      timeout(10)
+                    }
+                  }
+                  pruneStaleBranchTrait()
+                  wipeWorkspaceTrait()
+                }
+              }
+            }
+            strategy {
+              namedBranchesDifferent {
+                defaultProperties {
+                  suppressAutomaticTriggering()
+                }
+                namedExceptions {
+                  named {
+                    name('**')
+                    props {}
+                  }
+                }
+              }
+            }
+          }
+        }
+        orphanedItemStrategy {
+          discardOldItems {
+            numToKeep(1)
+            daysToKeep(1)
+          }
+        }
+      }
